@@ -243,6 +243,6 @@ void BodyPartsPanel::OnModelNameChanged()
 
 void BodyPartsPanel::OnModelNameRejected()
 {
-	QToolTip::showText(_ui.ModelName->mapToGlobal({0, -20}), "Model names must be unique");
+	QToolTip::showText(_ui.ModelName->mapToGlobal(QPoint{0, -20}), "Model names must be unique");
 }
 }

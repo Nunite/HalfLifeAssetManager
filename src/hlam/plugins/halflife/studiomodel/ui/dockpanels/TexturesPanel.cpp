@@ -343,7 +343,7 @@ void TexturesPanel::OnTextureNameChanged()
 
 void TexturesPanel::OnTextureNameRejected()
 {
-	QToolTip::showText(_ui.TextureName->mapToGlobal({0, -20}),
+	QToolTip::showText(_ui.TextureName->mapToGlobal(QPoint{0, -20}),
 		"Texture names must be unique and cannot start/end with whitespace");
 }
 

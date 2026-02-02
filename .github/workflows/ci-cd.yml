@@ -23,7 +23,17 @@ jobs:
           submodules: recursive
          
       - name: Install Qt
-        run: sudo apt install -y qtbase5-dev
+        uses: jurplel/install-qt-action@v3
+        with:
+          version: '6.9.3'
+          host: 'linux'
+          target: 'desktop'
+          arch: 'linux_gcc_64'
+          dir: '${{github.workspace}}/qt/'
+          modules: 'qtshadertools'
+
+      - name: Install Dependencies
+        run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev ninja-build
           
       - uses: lukka/get-cmake@latest
       
@@ -45,7 +55,7 @@ jobs:
       - name: Prepare artifacts
         run: |
           mkdir "Half-Life Asset Manager"
-          mv build/hlam "Half-Life Asset Manager"
+          mv build/HLAM "Half-Life Asset Manager"
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
@@ -53,8 +63,8 @@ jobs:
           name: Linux-x64
           path: "Half-Life Asset Manager"
 
-  win32:
-    name: Win32
+  win64:
+    name: Win64
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -65,11 +75,12 @@ jobs:
       - name: Install Qt
         uses: jurplel/install-qt-action@v3
         with:
-          version: '5.15.2'
+          version: '6.9.3'
           host: 'windows'
           target: 'desktop'
-          arch: 'win32_msvc2019'
+          arch: 'win64_msvc2022_64'
           dir: '${{github.workspace}}/qt/'
+          modules: 'qtshadertools'
       
       - uses: lukka/get-cmake@latest
       
@@ -84,27 +95,26 @@ jobs:
         run: >
           cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
           -DCMAKE_TOOLCHAIN_FILE=${{github.workspace}}/vcpkg/scripts/buildsystems/vcpkg.cmake
-          -DQt5_DIR=${{env.Qt5_DIR}}
-          -A Win32
+          -A x64
       
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j2
       
+      - name: Deploy Qt Dependencies
+        shell: powershell
+        run: |
+          & "${{env.Qt6_DIR}}/bin/windeployqt.exe" --release --dir "${{github.workspace}}/build/deploy" "${{github.workspace}}/build/${{env.BUILD_TYPE}}/HLAM.exe"
+          Copy-Item "${{github.workspace}}/build/${{env.BUILD_TYPE}}/HLAM.exe" -Destination "${{github.workspace}}/build/deploy"
+          Copy-Item "${{github.workspace}}/build/OpenAL32.dll" -Destination "${{github.workspace}}/build/deploy"
+          Copy-Item "${{github.workspace}}/build/fmt.dll" -Destination "${{github.workspace}}/build/deploy"
+
       - name: Prepare artifacts
         run: |
           mkdir "Half-Life Asset Manager"
-          mv build/HLAM.exe "Half-Life Asset Manager"
-          mv build/OpenAL32.dll "Half-Life Asset Manager"
-          mv build/Qt5Core.dll "Half-Life Asset Manager"
-          mv build/Qt5Gui.dll "Half-Life Asset Manager"
-          mv build/Qt5Network.dll "Half-Life Asset Manager"
-          mv build/Qt5Widgets.dll "Half-Life Asset Manager"
-          mv build/imageformats "Half-Life Asset Manager/imageformats"
-          mv build/platforms "Half-Life Asset Manager/platforms"
-          mv build/styles "Half-Life Asset Manager/styles"
+          xcopy /E /I "build\deploy" "Half-Life Asset Manager"
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: Win32
+          name: Win64
           path: "Half-Life Asset Manager"

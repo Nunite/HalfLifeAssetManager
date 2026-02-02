@@ -1,7 +1,7 @@
 #include <cmath>
 
 #include <QApplication>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QTableWidget>
 
 #include "ui/options/gameconfigurations/AutodetectConfigurePropertiesPage.hpp"
@@ -15,7 +15,7 @@ AutodetectGameConfigurationsWizard::AutodetectGameConfigurationsWizard(
 	, _options(options)
 {
 	//Set the dialog size to a fraction of the current screen
-	const QRect screenSize = QApplication::desktop()->screenGeometry(this);
+	const QRect screenSize = QApplication::primaryScreen()->geometry();
 
 	this->resize(
 		static_cast<int>(std::ceil(screenSize.width() * 0.9)),

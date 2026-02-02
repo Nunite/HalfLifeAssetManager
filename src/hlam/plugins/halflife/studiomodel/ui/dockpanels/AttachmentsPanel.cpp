@@ -173,7 +173,7 @@ void AttachmentsPanel::OnHighlightAttachmentChanged()
 
 void AttachmentsPanel::OnNameRejected()
 {
-	QToolTip::showText(_ui.Name->mapToGlobal({0, -20}), "Attachment names must be unique");
+	QToolTip::showText(_ui.Name->mapToGlobal(QPoint{0, -20}), "Attachment names must be unique");
 }
 
 void AttachmentsPanel::OnPropsChanged()

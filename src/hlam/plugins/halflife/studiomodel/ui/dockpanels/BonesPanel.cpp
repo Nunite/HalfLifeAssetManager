@@ -214,7 +214,7 @@ void BonesPanel::OnHightlightBoneChanged()
 
 void BonesPanel::OnBoneNameRejected()
 {
-	QToolTip::showText(_ui.BoneName->mapToGlobal({0, -20}), "Bone names must be unique");
+	QToolTip::showText(_ui.BoneName->mapToGlobal(QPoint{0, -20}), "Bone names must be unique");
 }
 
 void BonesPanel::OnPropsChanged()

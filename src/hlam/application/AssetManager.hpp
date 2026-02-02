@@ -9,6 +9,7 @@
 #include <QLoggingCategory>
 #include <QPointer>
 #include <QString>
+#include <QStringList>
 #include <QTimer>
 
 #include <spdlog/logger.h>
@@ -29,7 +30,6 @@ class QOpenGLDebugLogger;
 class QOpenGLDebugMessage;
 class QOpenGLFunctions_1_1;
 class QSettings;
-class QStringList;
 class SceneWidget;
 class WorldTime;
 

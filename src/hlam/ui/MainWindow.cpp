@@ -22,7 +22,6 @@
 #include <QUndoGroup>
 #include <QWidget>
 #include <QWindow>
-#include <QtPlatformHeaders/QWindowsWindowFunctions>
 
 #include "application/AssetIO.hpp"
 #include "application/AssetList.hpp"
@@ -69,9 +68,6 @@ MainWindow::MainWindow(AssetManager* application)
 
 	//This has to be a native window for there to be a window handle
 	setAttribute(Qt::WidgetAttribute::WA_NativeWindow, true);
-
-	//Without this going fullscreen will cause black flickering
-	QWindowsWindowFunctions::setHasBorderInFullScreen(this->windowHandle(), true);
 
 	this->setWindowIcon(QIcon{":/hlam.ico"});
 

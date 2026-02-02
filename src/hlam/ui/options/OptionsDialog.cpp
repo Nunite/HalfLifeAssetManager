@@ -5,7 +5,7 @@
 
 #include <QApplication>
 #include <QDesktopServices>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QFileInfo>
 #include <QMap>
 #include <QSettings>
@@ -28,7 +28,7 @@ OptionsDialog::OptionsDialog(AssetManager* application, QWidget* parent)
 	_ui.setupUi(this);
 
 	//Set the dialog size to a fraction of the current screen
-	const QRect screenSize = QApplication::desktop()->screenGeometry(this);
+	const QRect screenSize = QApplication::primaryScreen()->geometry();
 
 	this->resize(static_cast<int>(std::ceil(screenSize.width() * 0.9)), static_cast<int>(std::ceil(screenSize.height() * 0.9)));
 

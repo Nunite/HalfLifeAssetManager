@@ -55,9 +55,49 @@ add_custom_target(ProjectInfo
 	BYPRODUCTS ${CMAKE_BINARY_DIR}/ProjectInfo.hpp)
 
 # Find the QtWidgets library
-find_package(Qt5 CONFIG COMPONENTS Widgets Network REQUIRED)
+set(HLAM_QT_VERSION "Auto" CACHE STRING "Qt major version to use (Auto, 6, 5)")
+set_property(CACHE HLAM_QT_VERSION PROPERTY STRINGS Auto 6 5)
+
+set(_hlam_qt_components Widgets Network OpenGL OpenGLWidgets)
+
+if(HLAM_QT_VERSION STREQUAL "6")
+	find_package(Qt6 6.9.3 CONFIG QUIET COMPONENTS ${_hlam_qt_components})
+	if(Qt6_FOUND)
+		set(HLAM_QT_PACKAGE Qt6)
+	endif()
+elseif(HLAM_QT_VERSION STREQUAL "5")
+	find_package(Qt5 CONFIG QUIET COMPONENTS ${_hlam_qt_components})
+	if(Qt5_FOUND)
+		set(HLAM_QT_PACKAGE Qt5)
+	endif()
+else()
+	find_package(Qt6 6.9.3 CONFIG QUIET COMPONENTS ${_hlam_qt_components})
+	if(Qt6_FOUND)
+		set(HLAM_QT_PACKAGE Qt6)
+	else()
+		find_package(Qt5 CONFIG QUIET COMPONENTS ${_hlam_qt_components})
+		if(Qt5_FOUND)
+			set(HLAM_QT_PACKAGE Qt5)
+		endif()
+	endif()
+endif()
+
+if(NOT DEFINED HLAM_QT_PACKAGE)
+	message(FATAL_ERROR
+		"Could not find Qt (Qt6 or Qt5) with Widgets+Network.\n"
+		"Install Qt and then set one of:\n"
+		"  -DCMAKE_PREFIX_PATH=<QtInstallPrefix>\n"
+		"  -DQt6_DIR=<QtInstallPrefix>/lib/cmake/Qt6  (for Qt6)\n"
+		"  -DQt5_DIR=<QtInstallPrefix>/lib/cmake/Qt5  (for Qt5)\n"
+		"Example (Qt 6): -DCMAKE_PREFIX_PATH=C:/Qt/6.6.3/msvc2022_64\n"
+		"Example (Qt 5): -DCMAKE_PREFIX_PATH=C:/Qt/5.15.2/msvc2019_64\n"
+		"You can also force a version via -DHLAM_QT_VERSION=6 or -DHLAM_QT_VERSION=5")
+endif()
 
 function(copy_qt_dependencies target_name plugins)
+	if(NOT DEFINED ${plugins})
+		return()
+	endif()
 	foreach(plugin ${${plugins}})
 		# Copy plugins to the directory relative to the plugins directory in the Qt install directory
 		get_target_property(TARGET_LOCATION ${plugin} LOCATION)
@@ -116,8 +156,10 @@ target_compile_definitions(HLAM
 
 target_link_libraries(HLAM
 	PRIVATE
-		Qt5::Widgets
-		Qt5::Network
+		${HLAM_QT_PACKAGE}::Widgets
+		${HLAM_QT_PACKAGE}::Network
+		${HLAM_QT_PACKAGE}::OpenGL
+		${HLAM_QT_PACKAGE}::OpenGLWidgets
 		fmt::fmt
 		spdlog::spdlog_header_only 
 		OpenAL::OpenAL
@@ -165,17 +207,17 @@ target_sources(HLAM PRIVATE ${CMAKE_BINARY_DIR}/ProjectInfo.hpp)
 # Copy runtime dependencies automatically for dev builds.
 add_custom_command(TARGET HLAM POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:OpenAL::OpenAL> $<TARGET_FILE_DIR:HLAM>
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Core> $<TARGET_FILE_DIR:HLAM>
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Gui> $<TARGET_FILE_DIR:HLAM>
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Widgets> $<TARGET_FILE_DIR:HLAM>
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:Qt5::Network> $<TARGET_FILE_DIR:HLAM>
+	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${HLAM_QT_PACKAGE}::Core> $<TARGET_FILE_DIR:HLAM>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${HLAM_QT_PACKAGE}::Gui> $<TARGET_FILE_DIR:HLAM>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${HLAM_QT_PACKAGE}::Widgets> $<TARGET_FILE_DIR:HLAM>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${HLAM_QT_PACKAGE}::Network> $<TARGET_FILE_DIR:HLAM>
 )
 
 # Copy plugins so the program can run
-copy_qt_dependencies(HLAM Qt5Core_PLUGINS)
-copy_qt_dependencies(HLAM Qt5Gui_PLUGINS)
-copy_qt_dependencies(HLAM Qt5Widgets_PLUGINS)
-copy_qt_dependencies(HLAM Qt5Network_PLUGINS)
+copy_qt_dependencies(HLAM ${HLAM_QT_PACKAGE}Core_PLUGINS)
+copy_qt_dependencies(HLAM ${HLAM_QT_PACKAGE}Gui_PLUGINS)
+copy_qt_dependencies(HLAM ${HLAM_QT_PACKAGE}Widgets_PLUGINS)
+copy_qt_dependencies(HLAM ${HLAM_QT_PACKAGE}Network_PLUGINS)
 
 set_property(DIRECTORY ${CMAKE_SOURCE_DIR} PROPERTY VS_STARTUP_PROJECT HLAM)
 

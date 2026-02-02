@@ -263,10 +263,10 @@ void StudioModelAssetProvider::PopulateAssetMenu(QMenu* menu)
 	menu->addSeparator();
 
 	menu->addAction("Previous Camera", GetCameraOperators(), &CameraOperators::PreviousCamera,
-		QKeySequence{Qt::CTRL + static_cast<int>(Qt::Key::Key_U)});
+		QKeySequence{Qt::CTRL | Qt::Key::Key_U});
 
 	menu->addAction("Next Camera", GetCameraOperators(), &CameraOperators::NextCamera,
-		QKeySequence{Qt::CTRL + static_cast<int>(Qt::Key::Key_I)});
+		QKeySequence{Qt::CTRL | Qt::Key::Key_I});
 
 	menu->addSeparator();
 

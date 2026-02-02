@@ -137,7 +137,7 @@ void AutodetectScanResultsPage::OnStartScan()
 	const auto directories = gameDirectory.entryInfoList(QDir::Dirs, QDir::SortFlag::Name);
 
 	{
-		QProgressDialog dialog{"Scanning for games...", "Abort scan", 0, directories.size(), this};
+		QProgressDialog dialog{"Scanning for games...", "Abort scan", 0, static_cast<int>(directories.size()), this};
 		dialog.setWindowModality(Qt::WindowModal);
 		dialog.setMinimumDuration(2000);
 

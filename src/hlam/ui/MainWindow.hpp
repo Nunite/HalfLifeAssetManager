@@ -18,7 +18,6 @@ class AssetManager;
 class QActionGroup;
 class QGridLayout;
 class QMenu;
-class QStringList;
 class QTabBar;
 class QToolButton;
 class QUndoGroup;

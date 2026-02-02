@@ -10,7 +10,6 @@
 
 class QApplication;
 class QSettings;
-class QStringList;
 
 namespace graphics
 {

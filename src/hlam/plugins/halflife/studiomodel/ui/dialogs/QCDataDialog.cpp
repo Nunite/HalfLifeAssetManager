@@ -3,7 +3,7 @@
 
 #include <QApplication>
 #include <QVBoxLayout>
-#include <QDesktopWidget>
+#include <QScreen>
 #include <QLabel>
 #include <QPlainTextEdit>
 #include <QToolBox>
@@ -31,7 +31,7 @@ QCDataDialog::QCDataDialog(StudioModelAssetProvider* provider, QWidget* parent)
 	_ui->setupUi(this);
 
 	//Set the dialog size to a fraction of the current screen
-	const QRect screenSize = QApplication::desktop()->screenGeometry(this);
+	const QRect screenSize = QApplication::primaryScreen()->geometry();
 
 	const int height = static_cast<int>(std::ceil(screenSize.height() * 0.9));
 
