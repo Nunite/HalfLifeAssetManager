@@ -1,0 +1,67 @@
+Some packages did not declare an SPDX license. Check the `copyright` file for each package for more information about their licensing.
+Packages installed in this vcpkg installation declare the following licenses:
+LGPL-2.0-or-later
+LGPL-2.1-or-later
+MIT
+The package fmt provides CMake targets:
+
+    find_package(fmt CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE fmt::fmt)
+
+    # Or use the header-only version
+    find_package(fmt CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE fmt::fmt-header-only)
+
+glm provides CMake targets:
+
+  # this is heuristically generated, and may not be correct
+  find_package(glm CONFIG REQUIRED)
+  target_link_libraries(main PRIVATE glm::glm)
+
+The package json-schema-validator provides CMake integration:
+
+    find_package(libnyquist REQUIRED)
+    target_link_libraries(main PRIVATE libnyquist)
+
+The package openal-soft provides CMake targets:
+
+    find_package(OpenAL CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE OpenAL::OpenAL)
+
+The package spdlog provides CMake targets:
+
+    find_package(spdlog CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE spdlog::spdlog)
+
+    # Or use the header-only version
+    find_package(spdlog CONFIG REQUIRED)
+    target_link_libraries(main PRIVATE spdlog::spdlog_header_only)
+
+All requested installations completed successfully in: 2.1 min
+-- Running vcpkg install - done
+-- The CXX compiler identification is GNU 13.3.0
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found Git: /usr/bin/git (found version "2.52.0")
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so
+-- Found Threads: TRUE
+CMake Error at build/vcpkg_installed/x64-linux/share/openal-soft/OpenALConfig.cmake:1 (cmake_minimum_required):
+Error:   Compatibility with CMake < 3.5 has been removed from CMake.
+
+  Update the VERSION argument <min> value.  Or, use the <min>...<max> syntax
+  to tell CMake that the project requires at least <min> but has been updated
+  to work with policies introduced by <max> or earlier.
+
+  Or, add -DCMAKE_POLICY_VERSION_MINIMUM=3.5 to try configuring anyway.
+Call Stack (most recent call first):
+  vcpkg/scripts/buildsystems/vcpkg.cmake:908 (_find_package)
+  CMakeLists.txt:119 (find_package)
+
+
+-- Configuring incomplete, errors occurred!
+Error: Process completed with exit code 1.
