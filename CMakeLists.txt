@@ -207,11 +207,20 @@ target_sources(HLAM PRIVATE ${CMAKE_BINARY_DIR}/ProjectInfo.hpp)
 # Copy runtime dependencies automatically for dev builds.
 add_custom_command(TARGET HLAM POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:OpenAL::OpenAL> $<TARGET_FILE_DIR:HLAM>
-	COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${HLAM_QT_PACKAGE}::Core> $<TARGET_FILE_DIR:HLAM>
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${HLAM_QT_PACKAGE}::Gui> $<TARGET_FILE_DIR:HLAM>
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${HLAM_QT_PACKAGE}::Widgets> $<TARGET_FILE_DIR:HLAM>
-    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:${HLAM_QT_PACKAGE}::Network> $<TARGET_FILE_DIR:HLAM>
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different $<TARGET_FILE:fmt::fmt> $<TARGET_FILE_DIR:HLAM>
 )
+
+if (WIN32)
+    # Find windeployqt
+    find_program(WINDEPLOYQT_EXECUTABLE windeployqt HINTS ${_qt_bin_dir})
+    
+    if (WINDEPLOYQT_EXECUTABLE)
+        add_custom_command(TARGET HLAM POST_BUILD
+            COMMAND "${WINDEPLOYQT_EXECUTABLE}" --release \"$<TARGET_FILE:HLAM>\"
+            COMMENT "Running windeployqt..."
+        )
+    endif()
+endif()
 
 # Copy plugins so the program can run
 copy_qt_dependencies(HLAM ${HLAM_QT_PACKAGE}Core_PLUGINS)

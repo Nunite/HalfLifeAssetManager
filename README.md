@@ -85,17 +85,35 @@ You will need to install the latest Visual C++ x86 redistributable yourself to r
 Requirements:
 * CMake 3.25 or newer
 * Visual Studio 2022 or newer (Windows) or GCC 11 (Linux)
-* Qt 5.15.5 (Windows: download 32 bit MSVC 2019 version using Qt maintenance tool. Linux: install package `qtbase5-dev`)
+* Qt 6.9.3 (Windows: download 64 bit MSVC 2022 version using Qt maintenance tool. Linux: install package `qt6-base-dev` or similar)
 
 Clone the repository using Git. Make sure to clone submodules as well (`--recurse-submodules` on the command line).
 
 Use CMake to generate project files for your platform. When specifying how to set up the project make sure to choose "toolchain" and point it to `<repository root>/vcpkg/scripts/buildsystems/vcpkg.cmake`.
 
-Run configure. You will need to specify the variable `Qt5_DIR`. This should point to the path `<Qt install directory>/5.15.2/msvc2019/lib/cmake/Qt5` (Windows) or `/usr/lib/x86_64-linux-gnu/cmake/Qt5` (Linux). The exact path may differ depending on your system.
+### Configuring CMake
 
-Point `CMAKE_INSTALL_PREFIX` to `<repository root>/installer/packages/SamVanheer.HalfLifeAssetManager/data`.
+You need to specify the `CMAKE_PREFIX_PATH` to your Qt installation if it's not in a standard location.
 
-Generate the project files and use them to build the project.
+**Windows Example:**
+```bash
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake -DCMAKE_PREFIX_PATH="C:/Qt/6.9.3/msvc2022_64"
+```
+
+**Linux Example:**
+```bash
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=vcpkg/scripts/buildsystems/vcpkg.cmake
+```
+
+### Building the Project
+
+Run the build command:
+
+```bash
+cmake --build build --config Release
+```
+
+On Windows, the build process will automatically run `windeployqt` to copy the necessary Qt DLLs and plugins to the build directory.
 
 ### Creating installation packages on Windows
 
