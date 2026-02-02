@@ -118,6 +118,9 @@ function(copy_qt_dependencies target_name plugins)
 	endforeach()
 endfunction()
 
+# Fix for vcpkg packages that have too old cmake_minimum_required
+set(CMAKE_POLICY_VERSION_MINIMUM "3.5")
+
 find_package(glm CONFIG REQUIRED)
 find_package(spdlog CONFIG REQUIRED)
 find_package(OpenAL CONFIG REQUIRED)
