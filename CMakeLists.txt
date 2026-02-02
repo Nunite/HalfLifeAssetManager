@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.25)
 
+if (POLICY CMP0076)
+    cmake_policy(SET CMP0076 NEW)
+endif()
+
 set(VCPKG_OVERLAY_TRIPLETS ${CMAKE_SOURCE_DIR}/vcpkg_config/triplets)
 
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
