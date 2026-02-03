@@ -18,6 +18,7 @@ env:
   USERNAME: Nunite
   FEED_URL: https://nuget.pkg.github.com/Nunite/index.json
   VCPKG_BINARY_SOURCES: "clear;nuget,https://nuget.pkg.github.com/Nunite/index.json,readwrite"
+  NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
 
 jobs:
   linux:
@@ -41,7 +42,7 @@ jobs:
           modules: 'qtshadertools'
 
       - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev ninja-build mono-complete imagemagick file
+        run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev libxcb-cursor0 ninja-build mono-complete imagemagick file
 
       - uses: lukka/get-cmake@latest
       
