@@ -51,7 +51,7 @@ void AssetProviderRegistry::Shutdown()
 std::variant<std::unique_ptr<Asset>, AssetLoadInExternalProgram> AssetProviderRegistry::Load(
 	const QString& fileName) const
 {
-	std::unique_ptr<FILE, decltype(::fclose)*> file{utf8_exclusive_read_fopen(fileName.toStdString().c_str(), true), &::fclose};
+	std::unique_ptr<FILE, decltype(::fclose)*> file{utf8_exclusive_read_fopen(fileName.toUtf8().toStdString().c_str(), true), &::fclose};
 
 	if (!file)
 	{

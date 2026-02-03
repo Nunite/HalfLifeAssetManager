@@ -8,6 +8,11 @@
 
 #include <spdlog/logger.h>
 #include <spdlog/fmt/fmt.h>
+#include <fmt/format.h>
+
+#ifdef __cpp_lib_format
+#include <format>
+#endif
 
 #include "qt/QtLogSink.hpp"
 
@@ -44,6 +49,17 @@ struct fmt::formatter<QString>
 	}
 };
 
+#ifdef __cpp_lib_format
+template <>
+struct std::formatter<QString> : std::formatter<std::string>
+{
+	auto format(const QString& str, auto& ctx) const
+	{
+		return std::formatter<std::string>::format(str.toStdString(), ctx);
+	}
+};
+#endif
+
 template <>
 struct fmt::formatter<QUuid>
 {
@@ -65,3 +81,14 @@ struct fmt::formatter<QUuid>
 		return fmt::format_to(ctx.out(), "{}", id.toString().toStdString());
 	}
 };
+
+#ifdef __cpp_lib_format
+template <>
+struct std::formatter<QUuid> : std::formatter<std::string>
+{
+	auto format(const QUuid& id, auto& ctx) const
+	{
+		return std::formatter<std::string>::format(id.toString().toStdString(), ctx);
+	}
+};
+#endif

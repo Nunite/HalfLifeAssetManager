@@ -153,6 +153,7 @@ target_include_directories(HLAM
 target_compile_definitions(HLAM
 	PRIVATE
 		QT_MESSAGELOGCONTEXT
+		GLM_ENABLE_EXPERIMENTAL
 		$<$<CXX_COMPILER_ID:MSVC>:
 			UNICODE
 			_UNICODE

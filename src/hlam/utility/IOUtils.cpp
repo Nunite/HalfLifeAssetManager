@@ -1,24 +1,39 @@
 #include <cassert>
-#include <codecvt>
-#include <locale>
 #include <memory>
 #include <string>
 
 #include "utility/IOUtils.hpp"
 
 #ifdef WIN32
+#define WIN32_LEAN_AND_MEAN
+#define NOMINMAX
 #include <Windows.h>
 #include <fcntl.h>
 #include <io.h>
+
+static std::wstring Utf8ToWide(const char* str)
+{
+	if (!str) return {};
+	int len = MultiByteToWideChar(CP_UTF8, 0, str, -1, NULL, 0);
+	if (len <= 0) return {};
+	std::wstring wstr(len, static_cast<wchar_t>(0));
+	MultiByteToWideChar(CP_UTF8, 0, str, -1, &wstr[0], len);
+	// Remove the null terminator added by MultiByteToWideChar
+	while (!wstr.empty() && wstr.back() == 0) {
+		wstr.pop_back();
+	}
+	return wstr;
+}
 #endif
 
 FILE* utf8_fopen(const char* filename, const char* mode)
 {
 #ifdef WIN32
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> convert;
+	std::wstring wideFilename = Utf8ToWide(filename);
+	if (wideFilename.empty()) return nullptr;
 
-	auto wideFilename = convert.from_bytes(filename);
-	auto wideMode = convert.from_bytes(mode);
+	std::wstring wideMode = Utf8ToWide(mode);
+	if (wideMode.empty()) return nullptr;
 
 	return _wfopen(wideFilename.c_str(), wideMode.c_str());
 #else
@@ -29,9 +44,8 @@ FILE* utf8_fopen(const char* filename, const char* mode)
 FILE* utf8_exclusive_read_fopen(const char* filename, bool asBinary)
 {
 #ifdef WIN32
-	std::wstring_convert<std::codecvt_utf8_utf16<wchar_t>> convert;
-
-	auto wideFilename = convert.from_bytes(filename);
+	std::wstring wideFilename = Utf8ToWide(filename);
+	if (wideFilename.empty()) return nullptr;
 
 	const HANDLE fh = CreateFileW(wideFilename.c_str(), GENERIC_READ, 0 /* no sharing! exclusive */, NULL, OPEN_EXISTING, 0, nullptr);
 

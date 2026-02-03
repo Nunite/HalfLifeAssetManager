@@ -207,7 +207,7 @@ std::unique_ptr<studiomdl::EditableStudioModel> TryReloadModel(const QString& fi
 {
 	try
 	{
-		const std::string filePathString = fileName.toStdString();
+		const std::string filePathString = fileName.toUtf8().toStdString();
 		const auto filePath = std::filesystem::u8path(filePathString);
 
 		auto file = fileSystem.TryOpenAbsolute(filePathString, true, true);
