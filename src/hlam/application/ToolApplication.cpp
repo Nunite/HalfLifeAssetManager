@@ -169,7 +169,18 @@ int ToolApplication::Run(int argc, char* argv[])
 	}
 	catch (const std::exception& e)
 	{
-		qDebug() << "Unhandled exception:" << e.what();
+		qCritical() << "Unhandled exception:" << e.what();
+		qCritical() << "Exception type:" << typeid(e).name();
+		// Try to catch system_error specifically to see code
+		if (const auto* se = dynamic_cast<const std::system_error*>(&e))
+		{
+			qCritical() << "System error code:" << se->code().value() << se->code().message().c_str();
+		}
+		throw;
+	}
+	catch (...)
+	{
+		qCritical() << "Unhandled unknown exception";
 		throw;
 	}
 }

@@ -9,20 +9,23 @@ std::optional<std::unordered_map<std::string, std::string>> LiblistReader::Read(
 {
 	// liblist.gam files have comments and a list of keyvalue pairs in the format "key \"value\""
 
-	std::ifstream file(fileName);
+	std::unique_ptr<FILE, decltype(::fclose)*> cFile{utf8_fopen(fileName.c_str(), "rb"), &::fclose};
 
-	if (!file.is_open())
+	if (!cFile)
 	{
 		return {};
 	}
 
 	std::string contents;
 
-	file.seekg(0, std::ios::end);
-	contents.reserve(file.tellg());
-	file.seekg(0, std::ios::beg);
+	fseek(cFile.get(), 0, SEEK_END);
+	contents.resize(ftell(cFile.get()));
+	fseek(cFile.get(), 0, SEEK_SET);
 
-	contents.assign((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+	if (fread(contents.data(), 1, contents.size(), cFile.get()) != contents.size())
+	{
+		return {};
+	}
 
 	std::unordered_map<std::string, std::string> keyvalues;
 

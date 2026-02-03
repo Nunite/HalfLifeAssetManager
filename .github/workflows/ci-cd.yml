@@ -41,8 +41,8 @@ jobs:
           modules: 'qtshadertools'
 
       - name: Install Dependencies
-        run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev ninja-build mono-complete
-          
+        run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev ninja-build mono-complete imagemagick file
+
       - uses: lukka/get-cmake@latest
       
       - name: Restore artifacts, setup vcpkg
@@ -60,10 +60,42 @@ jobs:
       - name: Build
         run: cmake --build ${{github.workspace}}/build --config ${{env.BUILD_TYPE}} -j2
       
-      - name: Prepare artifacts
+      - name: Package AppImage
         run: |
+          # Install linuxdeploy and Qt plugin
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          chmod +x linuxdeploy*.AppImage
+
+          # Prepare AppDir
+          mkdir -p AppDir/usr/bin
+          install -m 755 build/hlam AppDir/usr/bin/
+          
+          # Convert icon (use the first image in the ico if multiple exist)
+          convert "src/hlam/hlam.ico[0]" hlam.png || touch hlam.png
+          
+          # Create desktop file
+          cat > hlam.desktop <<EOF
+          [Desktop Entry]
+          Type=Application
+          Name=Half-Life Asset Manager
+          Exec=hlam
+          Icon=hlam
+          Categories=Development;
+          Terminal=false
+          EOF
+          
+          # Generate AppImage
+          # Explicitly find qmake from the installed Qt directory
+          export QMAKE=$(find ${{github.workspace}}/qt -name qmake -type f | head -n 1)
+          echo "Using qmake: $QMAKE"
+          
+          # Run linuxdeploy
+          ./linuxdeploy-x86_64.AppImage --appdir AppDir --plugin qt --output appimage --icon-file hlam.png --desktop-file hlam.desktop
+          
+          # Prepare output folder
           mkdir "Half-Life Asset Manager"
-          mv build/hlam "Half-Life Asset Manager"
+          mv Half-Life_Asset_Manager*.AppImage "Half-Life Asset Manager/HLAM-Linux-x64.AppImage"
       
       - name: Upload artifacts
         uses: actions/upload-artifact@v4

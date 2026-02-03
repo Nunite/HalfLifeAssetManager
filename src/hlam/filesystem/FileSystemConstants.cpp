@@ -70,7 +70,8 @@ std::optional<std::filesystem::path> IsFileInGameAssetsDirectory(const std::file
 
 	for (const auto& part : directory)
 	{
-		directories.insert(directories.begin(), part.string());
+		const auto u8String = part.u8string();
+		directories.insert(directories.begin(), std::string(reinterpret_cast<const char*>(u8String.c_str())));
 	}
 
 	for (const auto& test : GameAssetDirectories)

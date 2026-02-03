@@ -262,3 +262,11 @@ else()
 
 	include(CPack)
 endif()
+
+# Test Executable
+add_executable(PathTest tests/PathTest.cpp)
+target_compile_features(PathTest PRIVATE cxx_std_20)
+# We don't link other libs to keep it minimal, but we need MSVC unicode settings
+if(MSVC)
+	target_compile_definitions(PathTest PRIVATE UNICODE _UNICODE)
+endif()

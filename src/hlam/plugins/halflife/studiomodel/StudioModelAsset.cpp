@@ -193,7 +193,7 @@ Continue?)", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 	// Once saved this is never true.
 	_editableStudioModel->HasExternalTextureFile = false;
 
-	const auto filePath = std::filesystem::u8path(GetFileName().toStdString());
+	const auto filePath = std::filesystem::u8path(GetFileName().toUtf8().toStdString());
 	auto result = studiomdl::ConvertFromEditable(filePath, *_editableStudioModel);
 
 	studiomdl::SaveStudioModel(filePath, result);

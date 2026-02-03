@@ -118,11 +118,11 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 
 	fileName = fileInfo.absoluteFilePath();
 
-	_logger->trace("Trying to load asset \"{}\"", fileName);
+	_logger->trace("Trying to load asset \"{}\"", fileName.toUtf8().toStdString());
 
 	if (!fileInfo.exists())
 	{
-		_logger->error("Asset \"{}\" does not exist", fileName);
+		_logger->error("Asset \"{}\" does not exist", fileName.toUtf8().toStdString());
 		return AssetLoadAction::Failed;
 	}
 
@@ -161,7 +161,7 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 				{
 					if (!result)
 					{
-						_logger->debug("Asset \"{}\" couldn't be loaded", fileName);
+						_logger->debug("Asset \"{}\" couldn't be loaded", fileName.toUtf8().toStdString());
 						return AssetLoadAction::Failed;
 					}
 
@@ -183,7 +183,7 @@ AssetLoadResult AssetList::TryLoadCore(QString fileName)
 	}
 	catch (const AssetException& e)
 	{
-		_logger->error("Error loading asset \"{}\":\n{}", fileName, e.what());
+		_logger->error("Error loading asset \"{}\":\n{}", fileName.toUtf8().toStdString(), e.what());
 	}
 
 	return AssetLoadAction::Failed;
@@ -214,7 +214,7 @@ bool AssetList::Save(Asset* asset)
 {
 	assert(asset);
 
-	_logger->trace("Trying to save asset \"{}\"", asset->GetFileName());
+	_logger->trace("Trying to save asset \"{}\"", asset->GetFileName().toUtf8().toStdString());
 
 	try
 	{
@@ -279,7 +279,7 @@ bool AssetList::RefreshCurrent()
 
 void AssetList::OnAssetAdded(int index)
 {
-	_logger->trace("Loaded asset \"{}\"", _assetList->Get(index)->GetFileName());
+	_logger->trace("Loaded asset \"{}\"", _assetList->Get(index)->GetFileName().toUtf8().toStdString());
 }
 
 void AssetList::OnAssetFileNameChanged(Asset* asset)

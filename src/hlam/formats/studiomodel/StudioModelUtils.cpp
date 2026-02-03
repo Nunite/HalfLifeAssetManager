@@ -1378,6 +1378,8 @@ StudioModel ConvertFromEditable(const std::filesystem::path& fileName, const Edi
 	header.version = STUDIO_VERSION;
 
 	//Store only the filename itself. It's never used for file loading so it's not terribly important
+	// Use u8string() and reinterpret_cast to copy the UTF-8 bytes of the filename
+	// UTIL_CopyString expects a null-terminated string, and .c_str() provides that.
 	UTIL_CopyString(header.name, reinterpret_cast<const char*>(fileName.filename().u8string().c_str()));
 
 	header.eyeposition = studioModel.EyePosition;

@@ -82,7 +82,7 @@ static std::tuple<std::unique_ptr<std::byte[]>, size_t> ReadStudioFileIntoBuffer
 
 	if (!std::get<0>(result))
 	{
-		throw AssetException(fmt::format("Error reading file \"{}\"", fileName));
+		throw AssetException(fmt::format("Error reading file \"{}\"", reinterpret_cast<const char*>(fileName.u8string().c_str())));
 	}
 
 	return result;
@@ -93,7 +93,7 @@ static void CheckHeaderIntegrity(const std::filesystem::path& fileName, const T*
 {
 	if (strncmp(reinterpret_cast<const char*>(&header->id), headerId, 4) != 0)
 	{
-		auto message = fmt::format("The file \"{}\" is not a studio model type {} file", fileName, headerId);
+		auto message = fmt::format("The file \"{}\" is not a studio model type {} file", reinterpret_cast<const char*>(fileName.u8string().c_str()), headerId);
 
 		if (strncmp(reinterpret_cast<const char*>(&header->id), STUDIOMDL_SEQ_ID, 4) == 0)
 		{
@@ -106,7 +106,7 @@ static void CheckHeaderIntegrity(const std::filesystem::path& fileName, const T*
 	if (header->version != STUDIO_VERSION)
 	{
 		throw AssetException(fmt::format("File \"{}\": version differs: expected \"{}\", got \"{}\"",
-			fileName, std::to_string(STUDIO_VERSION), header->version));
+			reinterpret_cast<const char*>(fileName.u8string().c_str()), std::to_string(STUDIO_VERSION), header->version));
 	}
 }
 
@@ -159,7 +159,7 @@ static studiomdl::StudioPtr<studiohdr_t> LoadTextureHeader(
 	if (!file)
 	{
 		throw AssetException(fmt::format(
-			"External texture file \"{}\" does not exist or is currently opened by another program", texturename));
+			"External texture file \"{}\" does not exist or is currently opened by another program", reinterpret_cast<const char*>(texturename.u8string().c_str())));
 	}
 
 	auto [buffer, size] = ReadStudioFileIntoBuffer(fileName, file.get());
@@ -180,7 +180,7 @@ static StudioPtr<studioseqhdr_t> LoadSequenceGroup(const std::filesystem::path& 
 	if (!file)
 	{
 		throw AssetException(fmt::format(
-			"Sequence group file \"{}\" does not exist or is currently opened by another program", fileName));
+			"Sequence group file \"{}\" does not exist or is currently opened by another program", reinterpret_cast<const char*>(fileName.u8string().c_str())));
 	}
 
 	auto [buffer, size] = ReadStudioFileIntoBuffer(fileName, file.get());
@@ -219,7 +219,7 @@ static std::vector<StudioPtr<studioseqhdr_t>> LoadSequenceGroups(
 		seqgroupname.clear();
 		fmt::format_to(std::back_inserter(seqgroupname), "{}{:0>2}{}", baseFileName, i, extension);
 
-		groupFileName.replace_filename(seqgroupname);
+		groupFileName.replace_filename(std::filesystem::u8path(seqgroupname));
 
 		sequenceHeaders.emplace_back(LoadSequenceGroup(groupFileName, fileSystem));
 	}
@@ -233,7 +233,7 @@ std::unique_ptr<StudioModel> LoadStudioModel(
 	StudioPtr<studiohdr_t> mainHeader = LoadMainHeader(fileName, mainFile);
 	StudioPtr<studiohdr_t> textureHeader = LoadTextureHeader(fileName, mainHeader.get(), fileSystem);
 	std::vector<StudioPtr<studioseqhdr_t>> sequenceHeaders = LoadSequenceGroups(fileName, mainHeader.get(), fileSystem);
-	const auto isDol = fileName.extension() == ".dol";
+	const auto isDol = fileName.extension().u8string() == u8".dol";
 
 	return std::make_unique<StudioModel>(std::move(mainHeader), std::move(textureHeader),
 		std::move(sequenceHeaders), isDol);

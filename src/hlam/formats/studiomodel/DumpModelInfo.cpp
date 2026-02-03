@@ -13,7 +13,7 @@ void DumpModelInfo(FILE* file, const std::filesystem::path& fileName, const Edit
 	assert(file);
 
 	//Pack it up first so everything's accurate
-	const auto packedData = ConvertFromEditable(fileName, model);
+	const auto packedData = ConvertFromEditable(std::filesystem::u8path(fileName.u8string()), model);
 
 	const studiohdr_t* const pHdr = packedData.GetStudioHeader();
 	const auto pTextureHdr = packedData.GetTextureHeader();

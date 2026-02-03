@@ -345,12 +345,15 @@ bool StudioModelAssetProvider::CanLoad(const QString& fileName, FILE* file) cons
 
 AssetLoadData StudioModelAssetProvider::Load(const QString& fileName, FILE* file)
 {
-	const auto filePath = std::filesystem::u8path(fileName.toStdString());
+	_logger->trace("StudioModelAssetProvider::Load: Starting load for {}", fileName.toUtf8().toStdString());
+	const auto filePath = std::filesystem::u8path(fileName.toUtf8().toStdString());
 
 	auto fileSystem = std::make_unique<FileSystem>();
 	_application->InitializeFileSystem(*fileSystem, fileName);
+	_logger->trace("StudioModelAssetProvider::Load: FileSystem initialized");
 
 	auto studioModel = studiomdl::LoadStudioModel(filePath, file, *fileSystem);
+	_logger->trace("StudioModelAssetProvider::Load: LoadStudioModel finished");
 
 	if (studiomdl::IsXashModel(*studioModel))
 	{

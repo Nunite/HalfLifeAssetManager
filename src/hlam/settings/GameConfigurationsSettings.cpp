@@ -278,18 +278,18 @@ void GameConfigurationsSettings::InitializeFileSystem(IFileSystem& fileSystem, c
 
 	if (isDefault)
 	{
-		const std::filesystem::path assetPath{assetFileName.toStdString()};
+		const auto assetPath = std::filesystem::u8path(assetFileName.toUtf8().toStdString());
 		const auto baseGameDirectoryPath = IsFileInGameAssetsDirectory(assetPath);
 
 		if (baseGameDirectoryPath)
 		{
-			const auto baseGameDirectory = QString::fromStdString(baseGameDirectoryPath->string());
+			const auto baseGameDirectory = QString::fromStdString(reinterpret_cast<const char*>(baseGameDirectoryPath->u8string().c_str()));
 
 			AddConfigurationToFileSystem(fileSystem, GameConfiguration{.BaseGameDirectory = baseGameDirectory});
 
 			_logger->trace(
 				"Using auto-detected game configuration for asset \"{}\" based on base game directory \"{}\"",
-				assetFileName, baseGameDirectory);
+				assetFileName.toUtf8().toStdString(), baseGameDirectory.toUtf8().toStdString());
 		}
 	}
 
@@ -302,7 +302,7 @@ void GameConfigurationsSettings::InitializeFileSystem(IFileSystem& fileSystem, c
 		{
 			const auto liblistFileName = QDir::toNativeSeparators(configuration->ModDirectory + "/liblist.gam");
 			
-			if (auto liblist = LiblistReader::Read(liblistFileName.toStdString()); liblist)
+			if (auto liblist = LiblistReader::Read(liblistFileName.toUtf8().toStdString()); liblist)
 			{
 				const QString fallbackDirectory = QString::fromStdString((*liblist)["fallback_dir"]);
 
@@ -361,8 +361,8 @@ void GameConfigurationsSettings::AddConfigurationToFileSystem(
 		}
 	};
 
-	const auto gameDir{configuration.BaseGameDirectory.toStdString()};
-	const auto modDir{configuration.ModDirectory.toStdString()};
+	const auto gameDir{configuration.BaseGameDirectory.toUtf8().toStdString()};
+	const auto modDir{configuration.ModDirectory.toUtf8().toStdString()};
 
 	//Add mod dirs first since they override game dirs
 	if (!modDir.empty() && gameDir != modDir)
