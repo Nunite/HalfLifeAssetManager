@@ -116,22 +116,6 @@ jobs:
           runVcpkgInstall: false
           vcpkgJsonIgnores: "['**/vcpkg/**', '**/vcpkg_config/**']"
       
-      - name: Setup NuGet sources
-        shell: pwsh
-        env:
-          VCPKG_EXE: ${{ env.VCPKG_ROOT }}/vcpkg
-        run: |
-          & $(${{ env.VCPKG_EXE }} fetch nuget) `
-            sources add `
-            -Source "${{ env.FEED_URL }}" `
-            -StorePasswordInClearText `
-            -Name GitHubPackages `
-            -UserName "${{ env.USERNAME }}" `
-            -Password "${{ secrets.GITHUB_TOKEN }}"
-          & $(${{ env.VCPKG_EXE }} fetch nuget) `
-            setapikey "${{ secrets.GITHUB_TOKEN }}" `
-            -Source "${{ env.FEED_URL }}"
-
       - name: Configure
         run: >
           cmake -B ${{github.workspace}}/build -DCMAKE_BUILD_TYPE=${{env.BUILD_TYPE}}
